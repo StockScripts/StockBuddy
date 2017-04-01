@@ -8,9 +8,10 @@ import pandas
 
 import numpy as np
 from pymongo import MongoClient
+np.random.seed(1337)
 from keras.layers.core import Activation,Dropout
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense,normalization
 from keras.layers.recurrent import LSTM
 # from textblob import TextBlob
 # from IPython.display import SVG
@@ -19,9 +20,9 @@ from keras.layers.recurrent import LSTM
 
 
 
-
 def stock_prediction(filename):
-    FILE_NAME = "dataset/"+filename+".csv"
+    print "File ::: " + filename
+    FILE_NAME = "tempdataset/"+filename+".csv"
     print "into stock prediction"
     # dataset = []
     # with open(FILE_NAME) as f:
@@ -45,17 +46,20 @@ def stock_prediction(filename):
     print trainY
     model = Sequential()
     model.add(Dense(20, input_dim=4,init='uniform', activation='relu'))
+    #model.add(normalization.BatchNormalization())
     model.add(Dense(40))
+    #model.add(normalization.BatchNormalization())
     model.add(Dense(40))
+    #model.add(normalization.BatchNormalization())
     model.add(Dense(20))
+    #model.add(normalization.BatchNormalization())
     # model.add(Dense(16))
     #
     # model.add(Dense(16))
-
-    model.add(Dense(1))
-
+    model.add(Dense(1,activation='relu'))
+    #model.add(normalization.BatchNormalization())
     model.compile(loss='mean_squared_error', optimizer='adam',metrics=['accuracy'])
-    model.fit(trainX, trainY, nb_epoch=200,batch_size=2048, verbose=2)
+    model.fit(trainX, trainY, nb_epoch=200,batch_size=128, verbose=2)
     # model.add(LSTM(input_dim=1, output_dim=50,return_sequences=True))
     # model.add(Dropout(0.2))
     # model.add(LSTM(100,return_sequences=False))
@@ -64,7 +68,7 @@ def stock_prediction(filename):
     # model.compile(loss='mean_squared_error', optimizer='rmsprop')
     # model.fit(trainX, trainY, nb_epoch=200, batch_size=512, verbose=2,validation_split=0.05)
 
-    prediction = model.predict(trainX,batch_size=2048)
+    prediction = model.predict(trainX)
     evaluation = model.evaluate(trainX,trainY)
     model.save('model.hdf5')
     model.summary()
