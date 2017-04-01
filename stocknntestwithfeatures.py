@@ -17,10 +17,11 @@ from keras.layers.recurrent import LSTM
 
 
 
-FILE_NAME = "dataset/AAPL1.csv"
-close_list = []
 
-def stock_prediction():
+
+
+def stock_prediction(filename):
+    FILE_NAME = "dataset/"+filename+".csv"
     print "into stock prediction"
     # dataset = []
     # with open(FILE_NAME) as f:
@@ -52,7 +53,7 @@ def stock_prediction():
     # model.add(Dense(16))
 
     model.add(Dense(1))
-    model.save('model.hdf5')
+
     model.compile(loss='mean_squared_error', optimizer='adam',metrics=['accuracy'])
     model.fit(trainX, trainY, nb_epoch=200,batch_size=2048, verbose=2)
     # model.add(LSTM(input_dim=1, output_dim=50,return_sequences=True))
@@ -65,6 +66,8 @@ def stock_prediction():
 
     prediction = model.predict(trainX,batch_size=2048)
     evaluation = model.evaluate(trainX,trainY)
+    model.save('model.hdf5')
+    model.summary()
     print "Evaluation ::: "
     print evaluation
     print "Accuracy ::: "
@@ -79,14 +82,15 @@ def stock_prediction():
     #plot(model, to_file='model.png')
     return prediction[0][0].astype(float)
 
-def evaluate():
+def evaluate(file):
     print "into evaluate"
-    print stock_prediction()
+    print stock_prediction(file)
     # for i in range(7):
     #     price = stock_prediction()
     #     close_list.append(price)
     # print close_list
 
 if __name__=="__main__":
-    evaluate()
+    file = raw_input("Enter File Name").upper()
+    evaluate(file)
 
